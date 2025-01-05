@@ -35,12 +35,29 @@ def display_bars(character, enemy, screen):
     screen.blit(enemy_mp_text, (450, 100))
     screen.blit(enemy_sp_text, (450, 150))
 
+    # Load potion icons
+    mp_potion_icon = pygame.image.load('assets/mp_potion.png')
+    sp_potion_icon = pygame.image.load('assets/sp_potion.png')
+    mp_potion_icon = pygame.transform.scale(mp_potion_icon, (32, 32))
+    sp_potion_icon = pygame.transform.scale(sp_potion_icon, (32, 32))
+
+    # Display potion counts with icons
+    mp_potion_count = character.inventory.items.count("MP Potion")
+    sp_potion_count = character.inventory.items.count("SP Potion")
+    mp_potion_text = font.render(f"x{mp_potion_count}", True, (255, 255, 255))
+    sp_potion_text = font.render(f"x{sp_potion_count}", True, (255, 255, 255))
+
+    screen.blit(mp_potion_icon, (50, 200))
+    screen.blit(mp_potion_text, (90, 200))
+    screen.blit(sp_potion_icon, (130, 200))
+    screen.blit(sp_potion_text, (170, 200))
+
     # Display character images
-    player_image = pygame.transform.scale(pygame.image.load(f"assets/{character.char_class.lower()}.png"), (32, 32))
+    player_image = pygame.transform.scale(pygame.image.load(f"assets/{character.char_class.lower()}.png"), (40, 40))
     enemy_image = pygame.Surface((32, 32))
     enemy_image.fill((255, 0, 0))
-    screen.blit(player_image, (50, 200))
-    screen.blit(enemy_image, (450, 200))
+    screen.blit(player_image, (50, 300))
+    screen.blit(enemy_image, (450, 300))
 
 def animate_action(action_text, screen):
     font = pygame.font.Font(None, 36)
@@ -122,13 +139,21 @@ def player_turn(player, enemy, screen):
                     selected_skill = player.skills[1]
                 elif event.key == pygame.K_3 and len(player.skills) > 2:
                     selected_skill = player.skills[2]
-                elif event.key == pygame.K_4 and len(player.skills) > 3:
-                    selected_skill = player.skills[3]
-                elif event.key == pygame.K_5:
+                # elif event.key == pygame.K_4 and len(player.skills) > 3:
+                #     selected_skill = player.skills[3]
+                elif event.key == pygame.K_4:
                     use_mp_potion(player)
+                    if bullet_hell(screen):
+                        animate_action("You dodged the attack!", screen)
+                    else:
+                        animate_action("You were hit while using the potion!", screen)
                     return None
-                elif event.key == pygame.K_6:
+                elif event.key == pygame.K_5:
                     use_sp_potion(player)
+                    if bullet_hell(screen):
+                        animate_action("You dodged the attack!", screen)
+                    else:
+                        animate_action("You were hit while using the potion!", screen)
                     return None
                 if selected_skill:
                     skill_cost = player_skills[selected_skill]["cost"]
@@ -164,7 +189,9 @@ def use_sp_potion(player):
 
 def bullet_hell(screen):
     font = pygame.font.Font(None, 36)
-    player_rect = pygame.Rect(screen.get_width() // 2, screen.get_height() - 50, 30, 30)
+    player_image = pygame.image.load('assets/bullet_hell.png')
+    player_image = pygame.transform.scale(player_image, (40, 40))
+    player_rect = player_image.get_rect(center=(screen.get_width() // 2, screen.get_height() - 50))
     bullets = []
     bullet_speed = 5
     player_speed = 15  # Increase player speed
@@ -205,7 +232,7 @@ def bullet_hell(screen):
 
         # Draw everything
         screen.fill((0, 0, 0))
-        pygame.draw.rect(screen, (255, 255, 255), player_rect)
+        screen.blit(player_image, player_rect.topleft)
         for bullet in bullets:
             pygame.draw.rect(screen, (255, 0, 0), bullet)
         text = font.render("Dodge the bullets for 5 seconds!", True, (255, 255, 255))
