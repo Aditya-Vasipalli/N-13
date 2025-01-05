@@ -43,6 +43,47 @@ def animate_action(action_text, screen):
     pygame.display.flip()
     pygame.time.wait(300)  # Wait for 300 milliseconds
 
+def timing_slider(screen):
+    font = pygame.font.Font(None, 36)
+    slider_width = 200
+    slider_height = 20
+    slider_x = (screen.get_width() - slider_width) // 2
+    slider_y = screen.get_height() - 100
+    target_width = 40
+    target_x = random.randint(slider_x, slider_x + slider_width - target_width)
+    target_y = slider_y
+
+    slider_rect = pygame.Rect(slider_x, slider_y, slider_width, slider_height)
+    target_rect = pygame.Rect(target_x, target_y, target_width, slider_height)
+    cursor_x = slider_x
+    cursor_speed = 5
+    direction = 1
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    if target_rect.collidepoint(cursor_x, slider_y):
+                        return True  # Hit
+                    else:
+                        return False  # Miss
+
+        cursor_x += cursor_speed * direction
+        if cursor_x <= slider_x or cursor_x >= slider_x + slider_width - 10:
+            direction *= -1
+
+        screen.fill((0, 0, 0))
+        pygame.draw.rect(screen, (255, 255, 255), slider_rect)
+        pygame.draw.rect(screen, (0, 255, 0), target_rect)
+        pygame.draw.rect(screen, (255, 0, 0), (cursor_x, slider_y, 10, slider_height))
+        text = font.render("Press SPACE to stop the slider!", True, (255, 255, 255))
+        screen.blit(text, (slider_x, slider_y - 40))
+        pygame.display.flip()
+        pygame.time.Clock().tick(60)
+
 def player_turn(player, enemy, screen):
     display_bars(player, enemy, screen)
     font = pygame.font.Font(None, 36)
@@ -87,8 +128,11 @@ def player_turn(player, enemy, screen):
                     if player.mp >= skill_cost.get("mp", 0) and player.sp >= skill_cost.get("sp", 0):
                         player.mp -= skill_cost.get("mp", 0)
                         player.sp -= skill_cost.get("sp", 0)
-                        animate_action(f"\nYou used {selected_skill}!", screen)
-                        player_skills[selected_skill]["effect"](player, enemy)
+                        if timing_slider(screen):
+                            animate_action(f"\nYou used {selected_skill}!", screen)
+                            player_skills[selected_skill]["effect"](player, enemy)
+                        else:
+                            animate_action("\nYou missed!", screen)
                     else:
                         animate_action("\nNot enough MP or SP!", screen)
                     return selected_skill
