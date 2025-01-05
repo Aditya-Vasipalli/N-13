@@ -13,26 +13,27 @@ pygame.init()
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("2D RPG Game")
 
-# Create a white box as a placeholder for the player image
-player_image = pygame.Surface((50, 50))
-player_image.fill((255, 255, 255))
+# Load and scale background image to fit 33x33 blocks
+background_image = pygame.image.load('assets/background_map.png')
+background_image = pygame.transform.scale(background_image, (33 * 32, 33 * 32))
+
+# Load character images
+mage_image = pygame.image.load('assets/mage.png')
+thief_image = pygame.image.load('assets/thief.png')
+warrior_image = pygame.image.load('assets/warrior.png')
+class_images = {"Mage": mage_image, "Thief": thief_image, "Warrior": warrior_image}
+
+# Resize character images to fit one grid box
+for key in class_images:
+    class_images[key] = pygame.transform.scale(class_images[key], (32, 32))
 
 # Create a red box as a placeholder for the enemy image
-enemy_image = pygame.Surface((50, 50))
+enemy_image = pygame.Surface((32, 32))  # Adjust size to 1 block
 enemy_image.fill((255, 0, 0))
 
 # Define a fixed map layout with different areas
 map_grid = [
-    ["village", "market", "forest", "cave", "mountain", "plains", "fortress", "enchanted_forest", "wizard_tower", "final_battle"],
-    ["hidden_treasure", "wise_old_man", "deeper_forest", "river", "abandoned_castle", "desert", "oasis", "ancient_ruins", "volcano", "ice_cave"],
-    ["return_to_king", "swamp", "dragon_lair", "dark_forest", "haunted_village", "plains", "fortress", "enchanted_forest", "wizard_tower", "final_battle"],
-    ["desert", "oasis", "ancient_ruins", "volcano", "ice_cave", "village", "market", "forest", "cave", "mountain"],
-    ["plains", "fortress", "enchanted_forest", "wizard_tower", "final_battle", "hidden_treasure", "wise_old_man", "deeper_forest", "river", "abandoned_castle"],
-    ["village", "market", "forest", "cave", "mountain", "plains", "fortress", "enchanted_forest", "wizard_tower", "final_battle"],
-    ["hidden_treasure", "wise_old_man", "deeper_forest", "river", "abandoned_castle", "desert", "oasis", "ancient_ruins", "volcano", "ice_cave"],
-    ["return_to_king", "swamp", "dragon_lair", "dark_forest", "haunted_village", "plains", "fortress", "enchanted_forest", "wizard_tower", "final_battle"],
-    ["desert", "oasis", "ancient_ruins", "volcano", "ice_cave", "village", "market", "forest", "cave", "mountain"],
-    ["plains", "fortress", "enchanted_forest", "wizard_tower", "final_battle", "hidden_treasure", "wise_old_man", "deeper_forest", "river", "abandoned_castle"]
+    [""] * 33 for _ in range(33)
 ]
 
 # Define enemy positions (hidden in certain regions)
@@ -42,7 +43,7 @@ enemy_positions = [(2, 2), (4, 4), (6, 6), (8, 8)]
 def main():
     global screen
     character = None
-    current_position = (0, 0)
+    current_position = (0, 0) 
     clock = pygame.time.Clock()
     full_screen = False
 
@@ -61,6 +62,7 @@ def main():
                         screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
                     else:
                         screen = pygame.display.set_mode((800, 600))
+                # Handle sprite movement
                 elif event.key == pygame.K_RIGHT and current_position[1] < len(map_grid[0]) - 1:
                     current_position = (current_position[0], current_position[1] + 1)
                 elif event.key == pygame.K_LEFT and current_position[1] > 0:
@@ -79,16 +81,19 @@ def main():
         screen.fill((0, 0, 0))  # Clear screen with black
 
         # Calculate the offset for scrolling
-        offset_x = max(0, current_position[1] * 100 - screen.get_width() // 2 + 25)
-        offset_y = max(0, current_position[0] * 100 - screen.get_height() // 2 + 25)
+        offset_x = max(0, min(current_position[1] * 32 - screen.get_width() // 2, background_image.get_width() - screen.get_width()))
+        offset_y = max(0, min(current_position[0] * 32 - screen.get_height() // 2, background_image.get_height() - screen.get_height()))
+
+        # Draw the background image with scrolling
+        screen.blit(background_image, (-offset_x, -offset_y))
 
         # Draw the map
         for y, row in enumerate(map_grid):
             for x, cell in enumerate(row):
                 if (x, y) == current_position:
-                    screen.blit(player_image, (y * 100 - offset_x, x * 100 - offset_y))
+                    screen.blit(class_images[character.char_class], (y * 32 - offset_x, x * 32 - offset_y))
                 elif (x, y) in enemy_positions:
-                    screen.blit(enemy_image, (y * 100 - offset_x, x * 100 - offset_y))
+                    screen.blit(enemy_image, (y * 32 - offset_x, x * 32 - offset_y))
 
         pygame.display.flip()
 

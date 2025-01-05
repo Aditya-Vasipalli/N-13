@@ -170,6 +170,15 @@ def create_character(screen):
     pygame.init()
     font = pygame.font.Font(None, 36)
 
+    # Load and resize class images
+    mage_image = pygame.image.load('assets/mage.png')
+    thief_image = pygame.image.load('assets/thief.png')
+    warrior_image = pygame.image.load('assets/warrior.png')
+    mage_image = pygame.transform.scale(mage_image, (300,300))
+    thief_image = pygame.transform.scale(thief_image, (300,300))
+    warrior_image = pygame.transform.scale(warrior_image, (350,300))
+    class_images = {"Mage": mage_image, "Thief": thief_image, "Warrior": warrior_image}
+
     name = ""
     char_class = None
     stats = {}
@@ -237,6 +246,10 @@ def create_character(screen):
             screen.blit(text, (300, 200))
             text = font.render("Press Enter to confirm or click another class to change", True, (255, 255, 255))
             screen.blit(text, (50, 300))
+
+            # Display class image aligned to the side
+            class_image = class_images[selected_class["name"]]
+            screen.blit(class_image, (70, 300))
 
         pygame.display.flip()
 

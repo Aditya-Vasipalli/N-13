@@ -35,6 +35,13 @@ def display_bars(character, enemy, screen):
     screen.blit(enemy_mp_text, (450, 100))
     screen.blit(enemy_sp_text, (450, 150))
 
+    # Display character images
+    player_image = pygame.transform.scale(pygame.image.load(f"assets/{character.char_class.lower()}.png"), (32, 32))
+    enemy_image = pygame.Surface((32, 32))
+    enemy_image.fill((255, 0, 0))
+    screen.blit(player_image, (50, 200))
+    screen.blit(enemy_image, (450, 200))
+
 def animate_action(action_text, screen):
     font = pygame.font.Font(None, 36)
     action_surface = font.render(action_text, True, (255, 255, 255))
@@ -153,6 +160,59 @@ def use_sp_potion(player):
     else:
         print("\nYou don't have any SP Potions!")
 
+def bullet_hell(screen):
+    font = pygame.font.Font(None, 36)
+    player_rect = pygame.Rect(screen.get_width() // 2, screen.get_height() - 50, 30, 30)
+    bullets = []
+    bullet_speed = 5
+    player_speed = 15  # Increase player speed
+    dodge_time = 5  # Time to dodge in seconds
+    start_time = time.time()
+
+    while time.time() - start_time < dodge_time:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    player_rect.x -= player_speed
+                elif event.key == pygame.K_RIGHT:
+                    player_rect.x += player_speed
+                elif event.key == pygame.K_UP:
+                    player_rect.y -= player_speed
+                elif event.key == pygame.K_DOWN:
+                    player_rect.y += player_speed
+
+        # Add new bullets
+        if random.random() < 0.1:
+            bullet_x = random.randint(0, screen.get_width() - 10)
+            bullets.append(pygame.Rect(bullet_x, 0, 10, 10))
+
+        # Move bullets
+        for bullet in bullets:
+            bullet.y += bullet_speed
+
+        # Check for collisions
+        for bullet in bullets:
+            if player_rect.colliderect(bullet):
+                return False  # Hit
+
+        # Remove off-screen bullets
+        bullets = [bullet for bullet in bullets if bullet.y < screen.get_height()]
+
+        # Draw everything
+        screen.fill((0, 0, 0))
+        pygame.draw.rect(screen, (255, 255, 255), player_rect)
+        for bullet in bullets:
+            pygame.draw.rect(screen, (255, 0, 0), bullet)
+        text = font.render("Dodge the bullets for 5 seconds!", True, (255, 255, 255))
+        screen.blit(text, (50, 50))
+        pygame.display.flip()
+        pygame.time.Clock().tick(60)
+
+    return True  # Successfully dodged
+
 def enemy_turn(player, enemy, screen):
     display_bars(player, enemy, screen)
     available_skills = [skill for skill in enemy_skills if 
@@ -170,8 +230,12 @@ def enemy_turn(player, enemy, screen):
     if "sp" in skill_cost:
         enemy["sp"] -= skill_cost["sp"]
     
-    enemy_skills[enemy_skill]["effect"](player, enemy)
-    animate_action(f"The opponent used {enemy_skill}!", screen)
+    if bullet_hell(screen):
+        animate_action("You dodged the attack!", screen)
+    else:
+        animate_action(f"The opponent used {enemy_skill}!", screen)
+        enemy_skills[enemy_skill]["effect"](player, enemy)
+    
     regenerate_enemy_mp(enemy)  # Regenerate MP after enemy's turn
     regenerate_enemy_sp(enemy)  # Regenerate SP after enemy's turn
 
