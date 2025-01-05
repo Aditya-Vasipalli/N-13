@@ -142,6 +142,8 @@ def player_turn(player, enemy, screen):
                             animate_action("\nYou missed!", screen)
                     else:
                         animate_action("\nNot enough MP or SP!", screen)
+                    player.regenerate_mp()  # Regenerate MP after player's turn
+                    player.regenerate_sp()  # Regenerate SP after player's turn
                     return selected_skill
 
 def use_mp_potion(player):
@@ -238,6 +240,9 @@ def enemy_turn(player, enemy, screen):
     
     regenerate_enemy_mp(enemy)  # Regenerate MP after enemy's turn
     regenerate_enemy_sp(enemy)  # Regenerate SP after enemy's turn
+
+
+    
 
 def turnwise(player, enemy, screen):
     while player.hp > 0 and enemy['hp'] > 0:

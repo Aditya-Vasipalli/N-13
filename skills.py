@@ -3,7 +3,7 @@ player_skills = {
     "Fireball": {
         "description": "A powerful fire attack.",
         "effect": lambda player, enemy: enemy.update({"hp": enemy["hp"] - 30}),
-        "cost": {"mp": 10}  # Costs 10 MP
+        "cost": {"mp": 12}  # Costs 10 MP
     },
     "Heal": {
         "description": "Heals the player.",
@@ -18,17 +18,17 @@ player_skills = {
     "Teleport": {
         "description": "Teleports the player to a safe location.",
         "effect": lambda player, enemy: print("You teleported to a safe location."),
-        "cost": {"mp": 20}  # Costs 20 MP
+        "cost": {"mp": 10}  # Costs 20 MP
     },
     "Steal": {
         "description": "Steals a small amount of health from the enemy.",
         "effect": lambda player, enemy: (enemy.update({"hp": enemy["hp"] - 5}), setattr(player, 'hp', player.hp + 5)),
-        "cost": {"sp": 4}  # Costs 4 SP
+        "cost": {"sp": 8}  # Costs 4 SP
     },
     "Backstab": {
         "description": "A sneaky attack that deals extra damage.",
         "effect": lambda player, enemy: enemy.update({"hp": enemy["hp"] - (player.stats["Agility"] * 2)}),
-        "cost": {"sp": 6}  # Costs 6 SP
+        "cost": {"sp": 7}  # Costs 6 SP
     },
     "Cure": {
         "description": "Removes all lingering effects.",
@@ -38,12 +38,12 @@ player_skills = {
     "Slash": {
         "description": "A basic attack with your weapon.",
         "effect": lambda player, enemy: enemy.update({"hp": enemy["hp"] - (player.stats["Strength"] * 1.5)}),
-        "cost": {"sp": 2}  # Costs 2 SP
+        "cost": {"sp": 7}  # Costs 2 SP
     },
     "Block": {
         "description": "Reduces incoming damage for one turn.",
         "effect": lambda player, enemy: setattr(player, 'block', True),
-        "cost": {"sp": 3}  # Costs 3 SP
+        "cost": {"sp": 6}  # Costs 3 SP
     },
     "Ice Shard": {
         "description": "A sharp ice attack.",

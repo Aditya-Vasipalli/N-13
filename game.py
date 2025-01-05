@@ -25,7 +25,7 @@ class_images = {"Mage": mage_image, "Thief": thief_image, "Warrior": warrior_ima
 
 # Resize character images to fit one grid box
 for key in class_images:
-    class_images[key] = pygame.transform.scale(class_images[key], (32, 32))
+    class_images[key] = pygame.transform.scale(class_images[key], (64, 64))
 
 # Create a red box as a placeholder for the enemy image
 enemy_image = pygame.Surface((32, 32))  # Adjust size to 1 block
@@ -37,7 +37,7 @@ map_grid = [
 ]
 
 # Define enemy positions (hidden in certain regions)
-enemy_positions = [(2, 2), (4, 4), (6, 6), (8, 8)]
+enemy_positions = [(2, 2), (2, 4), (2, 6), (2, 8), (12,1), (14,2)]
 
 # Main game loop
 def main():

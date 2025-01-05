@@ -10,6 +10,32 @@ class Player:
         self.xp = 0
         self.hp = 100  # Default HP; you can adjust based on class
         self.xp_threshold = 100  # XP required to level up
+        self.mp = self.calculate_mp()
+        self.sp = self.calculate_sp()
+        self.max_mp = self.mp
+        self.max_sp = self.sp
+
+    def calculate_mp(self):
+        base_mp = 1
+        mp = base_mp + (self.stats['Intelligence'] * 5)  # Example multiplier
+        return mp
+
+    def calculate_sp(self):
+        base_sp = 1
+        sp = base_sp + (self.stats['Agility'] * 5)  # Example multiplier
+        return sp
+
+    def regenerate_mp(self):
+        regen_amount = 5  # Example regeneration amount
+        if self.mp < self.max_mp:
+            self.mp = min(self.max_mp, self.mp + regen_amount)
+            print(f"{self.name} regenerated {regen_amount} MP. Current MP: {self.mp}")
+
+    def regenerate_sp(self):
+        regen_amount = 5  # Example regeneration amount
+        if self.sp < self.max_sp:
+            self.sp = min(self.max_sp, self.sp + regen_amount)
+            print(f"{self.name} regenerated {regen_amount} SP. Current SP: {self.sp}")
 
     def gain_xp(self, xp_gained):
         print(f"{self.name} gained {xp_gained} XP!")
@@ -25,6 +51,10 @@ class Player:
             print(f"{self.name} leveled up to level {self.level}!")
             print(f"HP increased to {self.hp}.")
             print(f"XP needed for next level: {self.xp_threshold}")
+            self.mp = self.calculate_mp()  # Recalculate MP on level up
+            self.max_mp = self.mp
+            self.sp = self.calculate_sp()  # Recalculate SP on level up
+            self.max_sp = self.sp
             self.display_level_up_screen()
 
     def display_level_up_screen(self):

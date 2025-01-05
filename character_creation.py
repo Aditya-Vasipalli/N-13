@@ -31,29 +31,36 @@ class Character:
         self.equipped_armor = None
         self.lingering_effects = []
         self.money = 100  # Starting money
+        self.inventory.add_item("MP Potion")
+        self.inventory.add_item("MP Potion")
+        self.inventory.add_item("MP Potion")
+        self.inventory.add_item("SP Potion")
+        self.inventory.add_item("SP Potion")
+        self.inventory.add_item("SP Potion")
+        logging.debug(f"Added 3 MP Potions and 3 SP Potions to {self.name}'s inventory.")
         logging.debug(f"Created Character: {self.name}, Class: {self.char_class}, Stats: {self.stats}, Skills: {self.skills}")
 
     def calculate_mp(self):
-        base_mp = 10
+        base_mp = 1
         mp = base_mp + (self.stats['Intelligence'] * 5)  # Example multiplier
         logging.debug(f"Calculated MP: {mp}")
         return mp
 
     def calculate_sp(self):
-        base_sp = 10
+        base_sp = 1
         sp = base_sp + (self.stats['Agility'] * 5)  # Example multiplier
         logging.debug(f"Calculated SP: {sp}")
         return sp
 
     def regenerate_mp(self):
-        regen_amount = 5  # Example regeneration amount
+        regen_amount = 3  # Example regeneration amount
         if self.mp < self.max_mp:
             self.mp = min(self.max_mp, self.mp + regen_amount)
             if self.mp < self.max_mp:
                 print(f"{self.name} regenerated {regen_amount} MP. Current MP: {self.mp}")
 
     def regenerate_sp(self):
-        regen_amount = 5  # Example regeneration amount
+        regen_amount = 3  # Example regeneration amount
         if self.sp < self.max_sp:
             self.sp = min(self.max_sp, self.sp + regen_amount)
             if self.sp < self.max_sp:

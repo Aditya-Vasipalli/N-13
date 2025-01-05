@@ -2,7 +2,7 @@ import logging
 from armor_weapon import Armor, Weapon  # Import Armor and Weapon classes
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s')
 
 class Inventory:
     def __init__(self):
@@ -47,7 +47,14 @@ class Inventory:
     def use_item(self, index, character):
         item = self.items.pop(index)
         logging.debug(f"Used item from inventory: {item}")
-        print(f"Used {item}.")
+        if item == "MP Potion":
+            character.mp = min(character.max_mp, character.mp + 20)
+            print(f"\nYou used an MP Potion and restored 20 MP. Current MP: {character.mp}")
+        elif item == "SP Potion":
+            character.sp = min(character.max_sp, character.sp + 20)
+            print(f"\nYou used an SP Potion and restored 20 SP. Current SP: {character.sp}")
+        else:
+            print(f"Used {item}.")
 
     def draw(self, screen):
         # Draw inventory items on the screen
