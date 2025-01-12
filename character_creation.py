@@ -162,14 +162,17 @@ class Character:
             print(f"You do not have {item} in your inventory.")
 
     def use_item(self, item):
-        if item in self.inventory:
+        if item in self.inventory.items:
             if item == "Health Potion":
-                self.hp = min(100, self.hp + 50)
+                self.hp = min(self.max_hp, self.hp + 50)
                 print(f"Your health is restored. Current HP: {self.hp}")
-            elif item == "Mana Potion":
-                self.mp = min(50, self.mp + 30)
+            elif item == "MP Potion":
+                self.mp = min(self.max_mp, self.mp + 20)
                 print(f"Your mana is restored. Current MP: {self.mp}")
-            self.inventory.remove(item)
+            elif item == "SP Potion":
+                self.sp = min(self.max_sp, self.sp + 20)
+                print(f"Your stamina is restored. Current SP: {self.sp}")
+            self.inventory.remove_item(item)
         else:
             print(f"You do not have {item} in your inventory.")
 
