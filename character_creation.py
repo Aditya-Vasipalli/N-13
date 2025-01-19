@@ -184,10 +184,14 @@ def create_character(screen):
     mage_image = pygame.image.load('assets/mage.png')
     thief_image = pygame.image.load('assets/thief.png')
     warrior_image = pygame.image.load('assets/warrior.png')
-    mage_image = pygame.transform.scale(mage_image, (300,300))
-    thief_image = pygame.transform.scale(thief_image, (300,300))
-    warrior_image = pygame.transform.scale(warrior_image, (350,300))
+    mage_image = pygame.transform.scale(mage_image, (200, 200))
+    thief_image = pygame.transform.scale(thief_image, (200, 200))
+    warrior_image = pygame.transform.scale(warrior_image, (200, 200))
     class_images = {"Mage": mage_image, "Thief": thief_image, "Warrior": warrior_image}
+
+    # Load and scale the character creation background image
+    creation_bg = pygame.image.load('assets/character_creation.png')
+    creation_bg = pygame.transform.scale(creation_bg, (screen.get_width(), screen.get_height()))
 
     name = ""
     char_class = None
@@ -209,8 +213,8 @@ def create_character(screen):
                 else:
                     name += event.unicode
 
-        screen.fill((0, 0, 0))
-        text = font.render("Enter your character's name: " + name, True, (255, 255, 255))
+        screen.blit(creation_bg, (0, 0))  # Draw the background image
+        text = font.render("Enter your character's name: " + name, True, (0, 0, 0))  # Black color
         screen.blit(text, (50, 50))
         pygame.display.flip()
 
@@ -239,27 +243,38 @@ def create_character(screen):
                 skills = selected_class["skills"]
                 break
 
-        screen.fill((0, 0, 0))
-        text = font.render("Choose your class:", True, (255, 255, 255))
+        screen.blit(creation_bg, (0, 0))  # Draw the background image
+        text = font.render("Choose your class:", True, (0, 0, 0))  # Black color
         screen.blit(text, (50, 50))
 
         for i, option in enumerate(class_options):
-            text = font.render(option["name"], True, (255, 255, 255))
-            screen.blit(text, (50, 100 + i * 50))
+            text = font.render(option["name"], True, (0, 0, 0))  # Black color
+            rect = text.get_rect(topleft=(50, 100 + i * 50))
+            # Draw semi-transparent box
+            box_color = (255, 255, 255, 128)  # Semi-transparent white
+            if rect.collidepoint(pygame.mouse.get_pos()):
+                box_color = (255, 255, 255, 255)  # Opaque white when hovered
+            box_surface = pygame.Surface((rect.width + 20, rect.height + 10), pygame.SRCALPHA)
+            box_surface.fill(box_color)
+            screen.blit(box_surface, (rect.x - 10, rect.y - 5))
+            screen.blit(text, rect)
 
         if selected_class:
-            text = font.render(f"Selected Class: {selected_class['name']}", True, (255, 255, 255))
+            text = font.render(f"Selected Class: {selected_class['name']}", True, (0, 0, 0))  # Black color
             screen.blit(text, (300, 100))
-            text = font.render(f"Stats: {selected_class['stats']}", True, (255, 255, 255))
+            text = font.render(f"Stats:", True, (0, 0, 0))  # Black color
             screen.blit(text, (300, 150))
-            text = font.render(f"Skills: {', '.join(selected_class['skills'])}", True, (255, 255, 255))
-            screen.blit(text, (300, 200))
-            text = font.render("Press Enter to confirm or click another class to change", True, (255, 255, 255))
-            screen.blit(text, (50, 300))
+            for j, (stat, value) in enumerate(selected_class['stats'].items()):
+                stat_text = font.render(f"{stat}: {value}", True, (0, 0, 0))  # Black color
+                screen.blit(stat_text, (300, 180 + j * 30))
+            text = font.render(f"Skills: {', '.join(selected_class['skills'])}", True, (0, 0, 0))  # Black color
+            screen.blit(text, (300, 300))
+            text = font.render("Press Enter to confirm or click another class to change", True, (0, 0, 0))  # Black color
+            screen.blit(text, (50, 400))
 
             # Display class image aligned to the side
             class_image = class_images[selected_class["name"]]
-            screen.blit(class_image, (70, 300))
+            screen.blit(class_image, (70, 350))
 
         pygame.display.flip()
 

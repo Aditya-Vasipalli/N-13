@@ -14,6 +14,10 @@ def main_menu(screen):
     current_position = (0, 0)
     font = pygame.font.Font(None, 36)
 
+    # Load and scale the menu background image
+    menu_bg = pygame.image.load('assets/menu.png')
+    menu_bg = pygame.transform.scale(menu_bg, (screen.get_width(), screen.get_height()))
+
     options = ["Create New Character", "Select Existing Character", "Start Game", "Continue Game", "Exit"]
     option_rects = []
 
@@ -47,15 +51,24 @@ def main_menu(screen):
                             sys.exit()
 
         # Draw menu
-        screen.fill((0, 0, 0))
-        text = font.render("Main Menu", True, (255, 255, 255))
-        screen.blit(text, (350, 50))
+        screen.blit(menu_bg, (0, 0))  # Draw the background image
+        text = font.render("Main Menu", True, (0, 0, 0))  # Black color
+        screen.blit(text, (screen.get_width() // 2 - text.get_width() // 2, 50))
 
         option_rects = []
+        box_width = 300
+        box_height = 50
         for i, option in enumerate(options):
-            text = font.render(option, True, (255, 255, 255))
-            rect = text.get_rect(topleft=(200, 150 + i * 50))
+            text = font.render(option, True, (0, 0, 0))  # Black color
+            rect = text.get_rect(center=(screen.get_width() // 2, 150 + i * 60))
             option_rects.append(rect)
+            # Draw semi-transparent rounded box
+            box_color = (255, 255, 255, 128)  # Semi-transparent white
+            if rect.collidepoint(pygame.mouse.get_pos()):
+                box_color = (255, 255, 255, 255)  # Opaque white when hovered
+            box_surface = pygame.Surface((box_width, box_height), pygame.SRCALPHA)
+            pygame.draw.rect(box_surface, box_color, box_surface.get_rect(), border_radius=10)
+            screen.blit(box_surface, (rect.x - (box_width - rect.width) // 2, rect.y - (box_height - rect.height) // 2))
             screen.blit(text, rect)
 
         pygame.display.flip()
