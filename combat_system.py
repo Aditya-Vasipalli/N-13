@@ -69,18 +69,22 @@ def animate_action(action_text, screen):
 
 def timing_slider(screen):
     font = pygame.font.Font(None, 36)
-    slider_width = 200
+    slider_bg = pygame.image.load('assets/slider_bg.png')
+    slider_bg = pygame.transform.scale(slider_bg, (screen.get_width(), screen.get_height()))
+    
+    # Manually define the length and width of the slider
+    slider_width = int(screen.get_width() * 0.9) - 40
     slider_height = 20
-    slider_x = (screen.get_width() - slider_width) // 2
+    slider_x = (screen.get_width() - slider_width - 40) // 2
     slider_y = screen.get_height() - 100
-    target_width = 40
-    target_x = random.randint(slider_x, slider_x + slider_width - target_width)
-    target_y = slider_y
+    target_width = 30
+    target_x = random.randint(slider_x + 20, slider_x + slider_width - target_width)
+    target_y = slider_y + 20
 
-    slider_rect = pygame.Rect(slider_x, slider_y, slider_width, slider_height)
+    slider_rect = pygame.Rect(slider_x + 20, slider_y + 20, slider_width, slider_height)
     target_rect = pygame.Rect(target_x, target_y, target_width, slider_height)
-    cursor_x = slider_x
-    cursor_speed = 5
+    cursor_x = slider_x + 20
+    cursor_speed = 8  # Increase speed
     direction = 1
 
     while True:
@@ -90,20 +94,20 @@ def timing_slider(screen):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    if target_rect.collidepoint(cursor_x, slider_y):
+                    if target_rect.collidepoint(cursor_x, slider_y + 20):
                         return True  # Hit
                     else:
                         return False  # Miss
 
         cursor_x += cursor_speed * direction
-        if cursor_x <= slider_x or cursor_x >= slider_x + slider_width - 10:
+        if cursor_x <= slider_x + 20 or cursor_x >= slider_x + slider_width - 10:
             direction *= -1
 
-        screen.fill((0, 0, 0))
-        pygame.draw.rect(screen, (255, 255, 255), slider_rect)
+        screen.blit(slider_bg, (0, 0))
+        pygame.draw.rect(screen, (255, 0, 0), slider_rect)
         pygame.draw.rect(screen, (0, 255, 0), target_rect)
-        pygame.draw.rect(screen, (255, 0, 0), (cursor_x, slider_y, 10, slider_height))
-        text = font.render("Press SPACE to stop the slider!", True, (255, 255, 255))
+        pygame.draw.rect(screen, (255, 255, 255), (cursor_x, slider_y + 20, 10, slider_height))  # White slider
+        text = font.render("Press SPACE to stop the slider!", True, (0, 0, 0))
         screen.blit(text, (slider_x, slider_y - 40))
         pygame.display.flip()
         pygame.time.Clock().tick(60)
@@ -189,34 +193,37 @@ def use_sp_potion(player):
 
 def bullet_hell(screen):
     font = pygame.font.Font(None, 36)
+    bullet_hell_bg = pygame.image.load('assets/bullet_hell_bg.png')
+    bullet_hell_bg = pygame.transform.scale(bullet_hell_bg, (screen.get_width(), screen.get_height()))
     player_image = pygame.image.load('assets/bullet_hell.png')
-    player_image = pygame.transform.scale(player_image, (40, 40))
+    player_image = pygame.transform.scale(player_image, (60, 60))
     player_rect = player_image.get_rect(center=(screen.get_width() // 2, screen.get_height() - 50))
     bullets = []
-    bullet_speed = 5
-    player_speed = 15  # Increase player speed
+    bullet_speed = 9  # Increase bullet speed
+    player_speed = 6  # Increase player speed
     dodge_time = 5  # Time to dodge in seconds
     start_time = time.time()
 
     while time.time() - start_time < dodge_time:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            player_rect.x -= player_speed
+        if keys[pygame.K_RIGHT]:
+            player_rect.x += player_speed
+        if keys[pygame.K_UP]:
+            player_rect.y -= player_speed
+        if keys[pygame.K_DOWN]:
+            player_rect.y += player_speed
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    player_rect.x -= player_speed
-                elif event.key == pygame.K_RIGHT:
-                    player_rect.x += player_speed
-                elif event.key == pygame.K_UP:
-                    player_rect.y -= player_speed
-                elif event.key == pygame.K_DOWN:
-                    player_rect.y += player_speed
 
         # Add new bullets
-        if random.random() < 0.1:
+        if random.random() < 0.3:  # Increase bullet frequency
             bullet_x = random.randint(0, screen.get_width() - 10)
-            bullets.append(pygame.Rect(bullet_x, 0, 10, 10))
+            bullets.append(pygame.Rect(bullet_x, 0, 10, 30))  # Make bullets three times longer
 
         # Move bullets
         for bullet in bullets:
@@ -231,7 +238,7 @@ def bullet_hell(screen):
         bullets = [bullet for bullet in bullets if bullet.y < screen.get_height()]
 
         # Draw everything
-        screen.fill((0, 0, 0))
+        screen.blit(bullet_hell_bg, (0, 0))
         screen.blit(player_image, player_rect.topleft)
         for bullet in bullets:
             pygame.draw.rect(screen, (255, 0, 0), bullet)
@@ -294,7 +301,41 @@ def win_or_loss(player, enemy, screen):
         player.hp = min(player.max_hp, player.hp + regen_health)
         player.gain_xp(enemy['xp_value'])  # Gain XP based on enemy's XP value
         print(f"You regenerated {regen_health} HP. Current HP: {player.hp}")
+        
+        # Display victory image
+        victory_image = pygame.image.load('assets/victory.png')
+        victory_image = pygame.transform.scale(victory_image, (screen.get_width(), screen.get_height()))
+        screen.blit(victory_image, (0, 0))
+        pygame.display.flip()
+        pygame.time.wait(2000)  # Display for 2 seconds
+        
         return "Victory!"
     else:
         print("You are on your last legs, about to die")
         return "Defeat!"
+
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption("Combat System Debug")
+
+    # Create a test player and enemy
+    player_stats = {"Strength": 10, "Agility": 5, "Intelligence": 3}
+    player_skills = ["Slash", "Block", "Cure"]
+    player = Character("Hero", "Warrior", player_stats, player_skills)
+    
+    enemy = {
+        "name": "Goblin",
+        "hp": 50,
+        "mp": 20,
+        "sp": 20,
+        "attack": 5,
+        "xp_value": 50
+    }
+
+    # Start the fight
+    result = win_or_loss(player, enemy, screen)
+    print(result)
+
+if __name__ == "__main__":
+    main()
