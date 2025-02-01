@@ -109,22 +109,64 @@ class Character:
         else:
             print(f"You do not know the skill: {skill}")
 
-    def learn_new_move(self):
+    def learn_new_move(self, screen):
         available_moves = ["Thunder Strike", "Heal", "Ice Blast", "Shadow Step"]
-        print("You have the opportunity to learn a new move!")
-        for i, move in enumerate(available_moves):
-            print(f"{i + 1}. {move}")
-        choice = int(input("Enter the number of the move you want to learn: ")) - 1
-        new_move = available_moves[choice]
+        font = pygame.font.Font(None, 36)
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_1:
+                        new_move = available_moves[0]
+                        break
+                    elif event.key == pygame.K_2:
+                        new_move = available_moves[1]
+                        break
+                    elif event.key == pygame.K_3:
+                        new_move = available_moves[2]
+                        break
+                    elif event.key == pygame.K_4:
+                        new_move = available_moves[3]
+                        break
+
+            screen.fill((0, 0, 0))
+            text = font.render("You have the opportunity to learn a new move!", True, (255, 255, 255))
+            screen.blit(text, (50, 50))
+            for i, move in enumerate(available_moves):
+                text = font.render(f"{i + 1}. {move}", True, (255, 255, 255))
+                screen.blit(text, (50, 100 + i * 50))
+            pygame.display.flip()
+
         if len(self.skills) >= 4:
-            print("You already have 4 moves. Choose a move to forget:")
-            for i, skill in enumerate(self.skills):
-                print(f"{i + 1}. {skill}")
-            forget_choice = int(input("Enter the number of the move you want to forget: ")) - 1
+            while True:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
+                            forget_choice = int(event.unicode) - 1
+                            break
+
+                screen.fill((0, 0, 0))
+                text = font.render("You already have 4 moves. Choose a move to forget:", True, (255, 255, 255))
+                screen.blit(text, (50, 50))
+                for i, skill in enumerate(self.skills):
+                    text = font.render(f"{i + 1}. {skill}", True, (255, 255, 255))
+                    screen.blit(text, (50, 100 + i * 50))
+                pygame.display.flip()
+
             self.skills[forget_choice] = new_move
         else:
             self.skills.append(new_move)
-        print(f"You learned {new_move}!")
+
+        screen.fill((0, 0, 0))
+        text = font.render(f"You learned {new_move}!", True, (255, 255, 255))
+        screen.blit(text, (50, 50))
+        pygame.display.flip()
+        pygame.time.wait(2000)  # Show for 2 seconds
 
     def equip_weapon(self):
         print("Choose a weapon to equip:")
@@ -148,7 +190,9 @@ class Character:
 
     def apply_lingering_effects(self):
         for effect in self.lingering_effects:
-            effect.apply(self)
+            self.hp -= effect["damage"]
+            print(f"{self.name} takes {effect['damage']} damage from {effect['name']}. Current HP: {self.hp}")
+            flash_lingering_effect_message(self.name, effect["name"])
 
     def remove_lingering_effects(self):
         self.lingering_effects = []
@@ -176,6 +220,27 @@ class Character:
         else:
             print(f"You do not have {item} in your inventory.")
 
+    def game_over(self, screen):
+        font = pygame.font.Font(None, 36)
+        screen.fill((0, 0, 0))
+        text = font.render(f"{self.name} has died. Game Over.", True, (255, 0, 0))
+        screen.blit(text, (50, 50))
+        pygame.display.flip()
+        pygame.time.wait(3000)  # Show for 3 seconds
+        pygame.quit()
+        sys.exit()
+
+def flash_lingering_effect_message(name, effect_name):
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    font = pygame.font.Font(None, 36)
+    message = f"{name} has been hit with a lingering effect: {effect_name}. Use Cure to stop more damage!"
+    text = font.render(message, True, (255, 0, 0))  # Red color for warning
+    screen.fill((0, 0, 0))  # Clear screen with black
+    screen.blit(text, (50, 300))
+    pygame.display.flip()
+    pygame.time.wait(1000)  # Show for 1 second (reduced from 2 seconds)
+
 def create_character(screen):
     pygame.init()
     font = pygame.font.Font(None, 36)
@@ -184,9 +249,9 @@ def create_character(screen):
     mage_image = pygame.image.load('assets/mage.png')
     thief_image = pygame.image.load('assets/thief.png')
     warrior_image = pygame.image.load('assets/warrior.png')
-    mage_image = pygame.transform.scale(mage_image, (200, 200))
-    thief_image = pygame.transform.scale(thief_image, (200, 200))
-    warrior_image = pygame.transform.scale(warrior_image, (200, 200))
+    mage_image = pygame.transform.scale(mage_image, (180, 180))
+    thief_image = pygame.transform.scale(thief_image, (180, 180))
+    warrior_image = pygame.transform.scale(warrior_image, (180, 180))
     class_images = {"Mage": mage_image, "Thief": thief_image, "Warrior": warrior_image}
 
     # Load and scale the character creation background image
@@ -234,7 +299,7 @@ def create_character(screen):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 for i, option in enumerate(class_options):
-                    rect = pygame.Rect(50, 100 + i * 50, 200, 40)
+                    rect = pygame.Rect(50, 100 + i * 70, 302, 52)  # Increase size of options and make boxes 2 pixels wider
                     if rect.collidepoint(mouse_pos):
                         selected_class = option
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN and selected_class:
@@ -249,14 +314,14 @@ def create_character(screen):
 
         for i, option in enumerate(class_options):
             text = font.render(option["name"], True, (0, 0, 0))  # Black color
-            rect = text.get_rect(topleft=(50, 100 + i * 50))
-            # Draw semi-transparent box
+            rect = text.get_rect(topleft=(50, 100 + i * 70))  # Increase size of options
+            # Draw semi-transparent rounded box
             box_color = (255, 255, 255, 128)  # Semi-transparent white
             if rect.collidepoint(pygame.mouse.get_pos()):
                 box_color = (255, 255, 255, 255)  # Opaque white when hovered
-            box_surface = pygame.Surface((rect.width + 20, rect.height + 10), pygame.SRCALPHA)
-            box_surface.fill(box_color)
-            screen.blit(box_surface, (rect.x - 10, rect.y - 5))
+            box_surface = pygame.Surface((rect.width + 42, rect.height + 22), pygame.SRCALPHA)
+            pygame.draw.rect(box_surface, box_color, box_surface.get_rect(), border_radius=10)
+            screen.blit(box_surface, (rect.x - 21, rect.y - 11))
             screen.blit(text, rect)
 
         if selected_class:
@@ -274,7 +339,7 @@ def create_character(screen):
 
             # Display class image aligned to the side
             class_image = class_images[selected_class["name"]]
-            screen.blit(class_image, (70, 350))
+            screen.blit(class_image, (70, 420))
 
         pygame.display.flip()
 

@@ -61,7 +61,7 @@ player_skills = {
 enemy_skills = {
     "Poisoned Dagger": {
         "description": "A poisoned attack that deals damage over time.",
-        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 5),
+        "effect": lambda player, enemy: player.lingering_effects.append({"name": "Poisoned Dagger", "damage": 5}),
         "cost": {"sp": 5}  # Costs 5 SP
     },
     "Berserk Rage": {
@@ -76,7 +76,7 @@ enemy_skills = {
     },
     "Infectious Bite": {
         "description": "A bite that infects the player, causing damage over time.",
-        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 10),
+        "effect": lambda player, enemy: player.lingering_effects.append({"name": "Infectious Bite", "damage": 5}),
         "cost": {"sp": 8}  # Costs 8 SP
     }
 }

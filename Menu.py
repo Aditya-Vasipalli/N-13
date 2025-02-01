@@ -1,5 +1,5 @@
 import pygame
-from character_creation import create_character
+from character_creation import create_character, Character  # Import Character class
 import sys
 
 def start_quest(character, main_menu_callback, current_position):
@@ -35,17 +35,15 @@ def main_menu(screen):
                             current_position = (0, 0)  # Reset position for new character
                         elif i == 1:
                             # Logic to select an existing character
-                            pass
+                            character = create_default_character()  # Use default character for now
                         elif i == 2:
                             if character is None:
-                                print("Please create or select a character first.")
-                            else:
-                                return character, current_position
+                                character = create_default_character()  # Use default character if none selected
+                            return character, current_position
                         elif i == 3:
                             if character is None:
-                                print("Please create or select a character first.")
-                            else:
-                                return character, current_position
+                                character = create_default_character()  # Use default character if none selected
+                            return character, current_position
                         elif i == 4:
                             pygame.quit()
                             sys.exit()
@@ -72,6 +70,11 @@ def main_menu(screen):
             screen.blit(text, rect)
 
         pygame.display.flip()
+
+def create_default_character():
+    stats = {"Strength": 10, "Agility": 5, "Intelligence": 3}
+    skills = ["Slash", "Block", "Cure"]
+    return Character("Default Warrior", "Warrior", stats, skills)
 
 def start_game(character, current_position):
     talk_to_king(character)

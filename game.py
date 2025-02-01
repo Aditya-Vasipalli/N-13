@@ -46,6 +46,7 @@ def main():
     current_position = (0, 0) 
     clock = pygame.time.Clock()
     full_screen = False
+    current_enemy = None
 
     while True:
         if character is None:
@@ -71,11 +72,17 @@ def main():
                     current_position = (current_position[0] + 1, current_position[1])
                 elif event.key == pygame.K_UP and current_position[0] > 0:
                     current_position = (current_position[0] - 1, current_position[1])
+                # Handle cheats
+                elif event.key == pygame.K_2 and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    character.mp = 10000
+                    character.sp = 10000
+                    print(f"Cheat activated: {character.name} now has 10000 MP and SP")
+                
                 
                 # Handle interaction with the current map location
                 location = map_grid[current_position[0]][current_position[1]]
                 print(f"Interacting with {location}")
-                handle_location_interaction(character, location, current_position)
+                current_enemy = handle_location_interaction(character, location, current_position)
 
         # Draw everything
         screen.fill((0, 0, 0))  # Clear screen with black
@@ -136,11 +143,13 @@ def assign_stat_points(character):
         pygame.display.flip()
         clock.tick(60)
 
+import random
+
 def handle_location_interaction(character, location, current_position):
     print(f"Debug: Handling interaction at location {location} with position {current_position}.")
     if current_position in enemy_positions:
         print("You have encountered an enemy!")
-        enemy = select_enemy("goblin")  # Replace with logic to select the appropriate enemy
+        enemy = select_enemy()  # Randomly select an enemy from the list
         if enemy:
             adjust_enemy_stats(enemy, character.level)
             display_enemy_details(enemy)
@@ -152,6 +161,7 @@ def handle_location_interaction(character, location, current_position):
                     assign_stat_points(character)  # Call assign_stat_points if stat_points is greater than 0
             if character.hp <= 0:
                 game_over(character)
+            return enemy
         else:
             print("Enemy not found.")
     elif location in ["village", "market", "forest", "cave", "mountain"]:
@@ -159,6 +169,7 @@ def handle_location_interaction(character, location, current_position):
         # Add logic for specific locations
     else:
         print(f"You have arrived at the {location}.")
+    return None
 
 def game_over(character):
     print(f"{character.name} has died. Game Over.")

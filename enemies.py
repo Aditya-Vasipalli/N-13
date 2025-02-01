@@ -1,5 +1,6 @@
 import random
 import pygame
+from skills import enemy_skills
 
 # Predefined list of 20 enemies with their characteristics
 enemies = [
@@ -10,10 +11,11 @@ enemies = [
         "defense": 2,
         "magical_resistance": 10,
         "special_ability": "Poisoned Dagger",
+        "skills": ["Poisoned Dagger"],
         "xp_value": 50,
         "level": 1,
-        "mp": 20,  # Default MP for enemy
-        "sp": 30   # Default SP for enemy
+        "mp": 20,
+        "sp": 30
     },
     {
         "name": "Orc",
@@ -22,10 +24,11 @@ enemies = [
         "defense": 5,
         "magical_resistance": 20,
         "special_ability": "Berserk Rage",
+        "skills": ["Berserk Rage"],
         "xp_value": 100,
         "level": 1,
-        "mp": 30,  # Default MP for enemy
-        "sp": 40   # Default SP for enemy
+        "mp": 30,
+        "sp": 40
     },
     {
         "name": "Dragon",
@@ -34,10 +37,11 @@ enemies = [
         "defense": 15,
         "magical_resistance": 50,
         "special_ability": "Fire Breath",
+        "skills": ["Fire Breath"],
         "xp_value": 500,
         "level": 1,
-        "mp": 50,  # Default MP for enemy
-        "sp": 60   # Default SP for enemy
+        "mp": 50,
+        "sp": 60
     },
     # Add more enemies as needed
     {
@@ -47,10 +51,11 @@ enemies = [
         "defense": 10,
         "magical_resistance": 5,
         "special_ability": "Regeneration",
+        "skills": ["Regeneration"],
         "xp_value": 150,
         "level": 1,
-        "mp": 20,  # Default MP for enemy
-        "sp": 30   # Default SP for enemy
+        "mp": 20,
+        "sp": 30
     },
     {
         "name": "Vampire",
@@ -59,10 +64,11 @@ enemies = [
         "defense": 8,
         "magical_resistance": 15,
         "special_ability": "Life Drain",
+        "skills": ["Life Drain"],
         "xp_value": 200,
         "level": 1,
-        "mp": 40,  # Default MP for enemy
-        "sp": 20   # Default SP for enemy
+        "mp": 40,
+        "sp": 20
     },
     {
         "name": "Zombie",
@@ -71,10 +77,11 @@ enemies = [
         "defense": 5,
         "magical_resistance": 5,
         "special_ability": "Infectious Bite",
+        "skills": ["Infectious Bite"],
         "xp_value": 70,
         "level": 1,
-        "mp": 10,  # Default MP for enemy
-        "sp": 20   # Default SP for enemy
+        "mp": 10,
+        "sp": 20
     },
     {
         "name": "Skeleton",
@@ -83,10 +90,11 @@ enemies = [
         "defense": 3,
         "magical_resistance": 5,
         "special_ability": "Curse",
+        "skills": ["Curse"],
         "xp_value": 60,
         "level": 1,
-        "mp": 15,  # Default MP for enemy
-        "sp": 10   # Default SP for enemy
+        "mp": 15,
+        "sp": 10
     },
     {
         "name": "Werewolf",
@@ -95,10 +103,11 @@ enemies = [
         "defense": 12,
         "magical_resistance": 10,
         "special_ability": "Frenzy",
+        "skills": ["Frenzy"],
         "xp_value": 180,
         "level": 1,
-        "mp": 20,  # Default MP for enemy
-        "sp": 30   # Default SP for enemy
+        "mp": 20,
+        "sp": 30
     },
     {
         "name": "Giant Spider",
@@ -107,10 +116,11 @@ enemies = [
         "defense": 8,
         "magical_resistance": 5,
         "special_ability": "Poisoned Dagger",
+        "skills": ["Poisoned Dagger"],
         "xp_value": 90,
         "level": 1,
-        "mp": 10,  # Default MP for enemy
-        "sp": 20   # Default SP for enemy
+        "mp": 10,
+        "sp": 20
     },
     {
         "name": "Dark Mage",
@@ -119,10 +129,11 @@ enemies = [
         "defense": 5,
         "magical_resistance": 20,
         "special_ability": "Curse",
+        "skills": ["Curse"],
         "xp_value": 100,
         "level": 1,
-        "mp": 50,  # Default MP for enemy
-        "sp": 10   # Default SP for enemy
+        "mp": 50,
+        "sp": 10
     },
     {
         "name": "Lich",
@@ -131,10 +142,11 @@ enemies = [
         "defense": 10,
         "magical_resistance": 30,
         "special_ability": "Life Drain",
+        "skills": ["Life Drain"],
         "xp_value": 300,
         "level": 1,
-        "mp": 60,  # Default MP for enemy
-        "sp": 20   # Default SP for enemy
+        "mp": 60,
+        "sp": 20
     },
     {
         "name": "Minotaur",
@@ -143,10 +155,11 @@ enemies = [
         "defense": 15,
         "magical_resistance": 10,
         "special_ability": "Berserk Rage",
+        "skills": ["Berserk Rage"],
         "xp_value": 250,
         "level": 1,
-        "mp": 30,  # Default MP for enemy
-        "sp": 40   # Default SP for enemy
+        "mp": 30,
+        "sp": 40
     },
     {
         "name": "Hydra",
@@ -155,10 +168,11 @@ enemies = [
         "defense": 18,
         "magical_resistance": 20,
         "special_ability": "Regeneration",
+        "skills": ["Regeneration"],
         "xp_value": 400,
         "level": 1,
-        "mp": 50,  # Default MP for enemy
-        "sp": 30   # Default SP for enemy
+        "mp": 50,
+        "sp": 30
     },
     {
         "name": "Golem",
@@ -167,10 +181,11 @@ enemies = [
         "defense": 20,
         "magical_resistance": 15,
         "special_ability": "Earthquake Stomp",
+        "skills": ["Earthquake Stomp"],
         "xp_value": 350,
         "level": 1,
-        "mp": 20,  # Default MP for enemy
-        "sp": 40   # Default SP for enemy
+        "mp": 20,
+        "sp": 40
     },
     {
         "name": "Phoenix",
@@ -179,10 +194,11 @@ enemies = [
         "defense": 12,
         "magical_resistance": 25,
         "special_ability": "Fire Breath",
+        "skills": ["Fire Breath"],
         "xp_value": 300,
         "level": 1,
-        "mp": 60,  # Default MP for enemy
-        "sp": 30   # Default SP for enemy
+        "mp": 60,
+        "sp": 30
     },
     {
         "name": "Basilisk",
@@ -191,10 +207,11 @@ enemies = [
         "defense": 10,
         "magical_resistance": 15,
         "special_ability": "Poisoned Dagger",
+        "skills": ["Poisoned Dagger"],
         "xp_value": 200,
         "level": 1,
-        "mp": 20,  # Default MP for enemy
-        "sp": 30   # Default SP for enemy
+        "mp": 20,
+        "sp": 30
     },
     {
         "name": "Griffin",
@@ -203,10 +220,11 @@ enemies = [
         "defense": 15,
         "magical_resistance": 10,
         "special_ability": "Sky Dive",
+        "skills": ["Sky Dive"],
         "xp_value": 250,
         "level": 1,
-        "mp": 30,  # Default MP for enemy
-        "sp": 40   # Default SP for enemy
+        "mp": 30,
+        "sp": 40
     },
     {
         "name": "Cyclops",
@@ -215,10 +233,11 @@ enemies = [
         "defense": 18,
         "magical_resistance": 10,
         "special_ability": "Earthquake Stomp",
+        "skills": ["Earthquake Stomp"],
         "xp_value": 300,
         "level": 1,
-        "mp": 20,  # Default MP for enemy
-        "sp": 40   # Default SP for enemy
+        "mp": 20,
+        "sp": 40
     },
     {
         "name": "Kraken",
@@ -227,10 +246,11 @@ enemies = [
         "defense": 20,
         "magical_resistance": 15,
         "special_ability": "Life Drain",
+        "skills": ["Life Drain"],
         "xp_value": 400,
         "level": 1,
-        "mp": 50,  # Default MP for enemy
-        "sp": 30   # Default SP for enemy
+        "mp": 50,
+        "sp": 30
     },
     {
         "name": "Demon",
@@ -239,18 +259,71 @@ enemies = [
         "defense": 20,
         "magical_resistance": 25,
         "special_ability": "Fire Breath",
+        "skills": ["Fire Breath"],
         "xp_value": 500,
         "level": 1,
-        "mp": 60,  # Default MP for enemy
-        "sp": 40   # Default SP for enemy
+        "mp": 60,
+        "sp": 40
     }
 ]
 
+# Define enemy skills
+enemy_skills = {
+    "Poisoned Dagger": {
+        "description": "A poisoned attack that deals damage over time.",
+        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 5),
+        "cost": {"sp": 5}  # Costs 5 SP
+    },
+    "Berserk Rage": {
+        "description": "Increases attack power for a short time.",
+        "effect": lambda player, enemy: enemy.update({"attack": enemy["attack"] * 1.5}),
+        "cost": {"sp": 10}  # Costs 10 SP
+    },
+    "Fire Breath": {
+        "description": "A fiery attack that deals massive damage.",
+        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - (enemy["attack"] * 2)),
+        "cost": {"mp": 15}  # Costs 15 MP
+    },
+    "Infectious Bite": {
+        "description": "A bite that infects the player, causing damage over time.",
+        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 10),
+        "cost": {"sp": 8}  # Costs 8 SP
+    },
+    "Regeneration": {
+        "description": "Regenerates health over time.",
+        "effect": lambda player, enemy: enemy.update({"hp": enemy["hp"] + 10}),
+        "cost": {"mp": 5}  # Costs 5 MP
+    },
+    "Curse": {
+        "description": "Curses the player, reducing their stats.",
+        "effect": lambda player, enemy: setattr(player, 'stats', {k: v - 1 for k, v in player.stats.items()}),
+        "cost": {"mp": 5}  # Costs 5 MP
+    },
+    "Frenzy": {
+        "description": "A frenzied attack that deals extra damage.",
+        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - (enemy["attack"] * 1.5)),
+        "cost": {"sp": 10}  # Costs 10 SP
+    },
+    "Earthquake Stomp": {
+        "description": "A powerful stomp that deals area damage.",
+        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 10),
+        "cost": {"sp": 15}  # Costs 15 SP
+    },
+    "Sky Dive": {
+        "description": "A diving attack from above.",
+        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - (enemy["attack"] * 1.5)),
+        "cost": {"sp": 10}  # Costs 10 SP
+    },
+    "Life Drain": {
+        "description": "Drains life from the player to heal the enemy.",
+        "effect": lambda player, enemy: (setattr(player, 'hp', player.hp - 10), enemy.update({"hp": enemy["hp"] + 10})),
+        "cost": {"mp": 10}  # Costs 10 MP
+    }
+}
+
 # Function to select an enemy
-def select_enemy(enemy_name):
-    for enemy in enemies:
-        if enemy["name"].lower() == enemy_name.lower():
-            return enemy.copy()  # Return a copy to avoid modifying the original
+def select_enemy():
+    return random.choice(enemies).copy()  # Return a copy to avoid modifying the original
 
 # Function to display enemy details
 def display_enemy_details(enemy):
@@ -261,6 +334,7 @@ def display_enemy_details(enemy):
         print(f"Defense: {enemy['defense']}")
         print(f"Magical Resistance: {enemy['magical_resistance']}")
         print(f"Special Ability: {enemy['special_ability']}")
+        print(f"Skills: {', '.join(enemy['skills'])}")
         print(f"XP Value: {enemy['xp_value']}")
         print(f"Level: {enemy['level']}")
         print(f"MP: {enemy['mp']}")
@@ -307,58 +381,58 @@ def adjust_enemy_stats(enemy, level):
     enemy["sp"] = int(enemy["sp"] * multiplier)  # Adjust SP based on level
 
 # Define enemy skills
-enemy_skills = {
-    "Poisoned Dagger": {
-        "description": "A poisoned attack that deals damage over time.",
-        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 5),
-        "cost": {"sp": 5}  # Costs 5 SP
-    },
-    "Berserk Rage": {
-        "description": "Increases attack power for a short time.",
-        "effect": lambda player, enemy: enemy.update({"attack": enemy["attack"] * 1.5}),
-        "cost": {"sp": 10}  # Costs 10 SP
-    },
-    "Fire Breath": {
-        "description": "A fiery attack that deals massive damage.",
-        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - (enemy["attack"] * 2)),
-        "cost": {"mp": 15}  # Costs 15 MP
-    },
-    "Infectious Bite": {
-        "description": "A bite that infects the player, dealing damage over time.",
-        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 5),
-        "cost": {"sp": 5}  # Costs 5 SP
-    },
-    "Frenzy": {
-        "description": "A frenzied attack that deals extra damage.",
-        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - (enemy["attack"] * 1.5)),
-        "cost": {"sp": 10}  # Costs 10 SP
-    },
-    "Earthquake Stomp": {
-        "description": "A powerful stomp that deals area damage.",
-        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 10),
-        "cost": {"sp": 15}  # Costs 15 SP
-    },
-    "Sky Dive": {
-        "description": "A diving attack from above.",
-        "effect": lambda player, enemy: setattr(player, 'hp', player.hp - (enemy["attack"] * 1.5)),
-        "cost": {"sp": 10}  # Costs 10 SP
-    },
-    "Life Drain": {
-        "description": "Drains life from the player to heal the enemy.",
-        "effect": lambda player, enemy: (setattr(player, 'hp', player.hp - 10), enemy.update({"hp": enemy["hp"] + 10})),
-        "cost": {"mp": 10}  # Costs 10 MP
-    },
-    "Regeneration": {
-        "description": "Regenerates health over time.",
-        "effect": lambda player, enemy: enemy.update({"hp": enemy["hp"] + 10}),
-        "cost": {"mp": 5}  # Costs 5 MP
-    },
-    "Curse": {
-        "description": "Curses the player, reducing their stats.",
-        "effect": lambda player, enemy: setattr(player, 'stats', {k: v - 1 for k, v in player.stats.items()}),
-        "cost": {"mp": 5}  # Costs 5 MP
-    }
-}
+# enemy_skills = {
+#     "Poisoned Dagger": {
+#         "description": "A poisoned attack that deals damage over time.",
+#         "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 5),
+#         "cost": {"sp": 5}  # Costs 5 SP
+#     },
+#     "Berserk Rage": {
+#         "description": "Increases attack power for a short time.",
+#         "effect": lambda player, enemy: enemy.update({"attack": enemy["attack"] * 1.5}),
+#         "cost": {"sp": 10}  # Costs 10 SP
+#     },
+#     "Fire Breath": {
+#         "description": "A fiery attack that deals massive damage.",
+#         "effect": lambda player, enemy: setattr(player, 'hp', player.hp - (enemy["attack"] * 2)),
+#         "cost": {"mp": 15}  # Costs 15 MP
+#     },
+#     "Infectious Bite": {
+#         "description": "A bite that infects the player, dealing damage over time.",
+#         "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 5),
+#         "cost": {"sp": 5}  # Costs 5 SP
+#     },
+#     "Frenzy": {
+#         "description": "A frenzied attack that deals extra damage.",
+#         "effect": lambda player, enemy: setattr(player, 'hp', player.hp - (enemy["attack"] * 1.5)),
+#         "cost": {"sp": 10}  # Costs 10 SP
+#     },
+#     "Earthquake Stomp": {
+#         "description": "A powerful stomp that deals area damage.",
+#         "effect": lambda player, enemy: setattr(player, 'hp', player.hp - 10),
+#         "cost": {"sp": 15}  # Costs 15 SP
+#     },
+#     "Sky Dive": {
+#         "description": "A diving attack from above.",
+#         "effect": lambda player, enemy: setattr(player, 'hp', player.hp - (enemy["attack"] * 1.5)),
+#         "cost": {"sp": 10}  # Costs 10 SP
+#     },
+#     "Life Drain": {
+#         "description": "Drains life from the player to heal the enemy.",
+#         "effect": lambda player, enemy: (setattr(player, 'hp', player.hp - 10), enemy.update({"hp": enemy["hp"] + 10})),
+#         "cost": {"mp": 10}  # Costs 10 MP
+#     },
+#     "Regeneration": {
+#         "description": "Regenerates health over time.",
+#         "effect": lambda player, enemy: enemy.update({"hp": enemy["hp"] + 10}),
+#         "cost": {"mp": 5}  # Costs 5 MP
+#     },
+#     "Curse": {
+#         "description": "Curses the player, reducing their stats.",
+#         "effect": lambda player, enemy: setattr(player, 'stats', {k: v - 1 for k, v in player.stats.items()}),
+#         "cost": {"mp": 5}  # Costs 5 MP
+#     }
+# }
 
 # Function to regenerate MP for an enemy
 def regenerate_enemy_mp(enemy):
@@ -397,7 +471,7 @@ class Enemy:
 # Example usage
 if __name__ == "__main__":
     enemy_name = input("Enter the name of the enemy to select: ")
-    selected_enemy = select_enemy(enemy_name)
+    selected_enemy = select_enemy()
     if selected_enemy:
         level = int(input("Enter the level of the enemy: "))
         adjust_enemy_stats(selected_enemy, level)

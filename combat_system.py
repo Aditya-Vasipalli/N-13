@@ -65,7 +65,7 @@ def animate_action(action_text, screen):
     screen.fill((0, 0, 0))  # Clear screen
     screen.blit(action_surface, (50, 200))
     pygame.display.flip()
-    pygame.time.wait(300)  # Wait for 300 milliseconds
+    pygame.time.wait(1000)  # Wait for 1000 milliseconds (1 second)
 
 def timing_slider(screen):
     font = pygame.font.Font(None, 36)
@@ -120,60 +120,101 @@ def player_turn(player, enemy, screen):
     screen.blit(font.render("It's Your turn!", True, (255, 255, 255)), (50, 250))
     screen.blit(font.render("Choose your move:", True, (255, 255, 255)), (50, 300))
     
-    options = [f"{i + 1}. {skill} - {player_skills[skill]['description']}" for i, skill in enumerate(player.skills)]
-    options.append(f"{len(player.skills) + 1}. Use MP Potion")
-    options.append(f"{len(player.skills) + 2}. Use SP Potion")
+    options = [f"{skill} (MP: {player_skills[skill]['cost'].get('mp', 0)}, SP: {player_skills[skill]['cost'].get('sp', 0)})" for skill in player.skills]
+    options.append("Use MP Potion")
+    options.append("Use SP Potion")
     
+    option_rects = []
     for i, option in enumerate(options):
-        screen.blit(font.render(option, True, (255, 255, 255)), (50, 350 + i * 50))
+        text = font.render(option, True, (255, 255, 255))
+        rect = text.get_rect(topleft=(50, 350 + i * 50))
+        option_rects.append((rect, option))
+        # Draw semi-transparent rounded box
+        box_color = (255, 255, 255, 128)  # Semi-transparent white
+        box_surface = pygame.Surface((rect.width + 20, rect.height + 10), pygame.SRCALPHA)
+        pygame.draw.rect(box_surface, box_color, box_surface.get_rect(), border_radius=10)
+        screen.blit(box_surface, (rect.x - 10, rect.y - 5))
+        screen.blit(text, rect)
     
     pygame.display.flip()
     
     selected_skill = None  # Initialize selected_skill to None
+    hover_description = None  # Initialize hover_description to None
+    
+    player.apply_lingering_effects()  # Apply lingering effects at the start of the turn
     
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1 and len(player.skills) > 0:
-                    selected_skill = player.skills[0]
-                elif event.key == pygame.K_2 and len(player.skills) > 1:
-                    selected_skill = player.skills[1]
-                elif event.key == pygame.K_3 and len(player.skills) > 2:
-                    selected_skill = player.skills[2]
-                # elif event.key == pygame.K_4 and len(player.skills) > 3:
-                #     selected_skill = player.skills[3]
-                elif event.key == pygame.K_4:
-                    use_mp_potion(player)
-                    if bullet_hell(screen):
-                        animate_action("You dodged the attack!", screen)
-                    else:
-                        animate_action("You were hit while using the potion!", screen)
-                    return None
-                elif event.key == pygame.K_5:
-                    use_sp_potion(player)
-                    if bullet_hell(screen):
-                        animate_action("You dodged the attack!", screen)
-                    else:
-                        animate_action("You were hit while using the potion!", screen)
-                    return None
-                if selected_skill:
-                    skill_cost = player_skills[selected_skill]["cost"]
-                    if player.mp >= skill_cost.get("mp", 0) and player.sp >= skill_cost.get("sp", 0):
-                        player.mp -= skill_cost.get("mp", 0)
-                        player.sp -= skill_cost.get("sp", 0)
-                        if timing_slider(screen):
-                            animate_action(f"\nYou used {selected_skill}!", screen)
-                            player_skills[selected_skill]["effect"](player, enemy)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                for rect, option in option_rects:
+                    if rect.collidepoint(mouse_pos):
+                        if option.startswith("Use MP Potion"):
+                            use_mp_potion(player)
+                            if bullet_hell(screen):
+                                animate_action("You dodged the attack!", screen)
+                            else:
+                                animate_action("You were hit while using the potion!", screen)
+                            return None
+                        elif option.startswith("Use SP Potion"):
+                            use_sp_potion(player)
+                            if bullet_hell(screen):
+                                animate_action("You dodged the attack!", screen)
+                            else:
+                                animate_action("You were hit while using the potion!", screen)
+                            return None
                         else:
-                            animate_action("\nYou missed!", screen)
-                    else:
-                        animate_action("\nNot enough MP or SP!", screen)
-                    player.regenerate_mp()  # Regenerate MP after player's turn
-                    player.regenerate_sp()  # Regenerate SP after player's turn
-                    return selected_skill
+                            selected_skill = option.split(" (")[0]
+                        break
+
+        if selected_skill:
+            skill_cost = player_skills[selected_skill]["cost"]
+            if player.mp >= skill_cost.get("mp", 0) and player.sp >= skill_cost.get("sp", 0):
+                player.mp -= skill_cost.get("mp", 0)
+                player.sp -= skill_cost.get("sp", 0)
+                if timing_slider(screen):
+                    animate_action(f"\nYou used {selected_skill}!", screen)
+                    player_skills[selected_skill]["effect"](player, enemy)
+                    if selected_skill == "Cure":
+                        player.remove_lingering_effects()  # Remove lingering effects if Cure is used
+                else:
+                    animate_action("\nYou missed!", screen)
+            else:
+                animate_action("\nNot enough MP or SP!", screen)
+            player.regenerate_mp()  # Regenerate MP after player's turn
+            player.regenerate_sp()  # Regenerate SP after player's turn
+            show_regeneration(screen, player.name, player.mp, player.sp)  # Show regeneration
+            return selected_skill
+
+        # Update hover effect
+        mouse_pos = pygame.mouse.get_pos()
+        for rect, option in option_rects:
+            if rect.collidepoint(mouse_pos):
+                skill_name = option.split(" (")[0]
+                if skill_name in player_skills:
+                    description = player_skills[skill_name]["description"]
+                    hover_description = font.render(description, True, (255, 255, 255))
+                    screen.blit(hover_description, (rect.x, rect.y - 30))
+                    pygame.display.flip()
+                    break
+        else:
+            if hover_description:
+                screen.fill((0, 0, 0))  # Clear screen
+                display_bars(player, enemy, screen)
+                screen.blit(font.render("It's Your turn!", True, (255, 255, 255)), (50, 250))
+                screen.blit(font.render("Choose your move:", True, (255, 255, 255)), (50, 300))
+                for rect, option in option_rects:
+                    text = font.render(option, True, (255, 255, 255))
+                    box_color = (255, 255, 255, 128)  # Semi-transparent white
+                    box_surface = pygame.Surface((rect.width + 20, rect.height + 10), pygame.SRCALPHA)
+                    pygame.draw.rect(box_surface, box_color, box_surface.get_rect(), border_radius=10)
+                    screen.blit(box_surface, (rect.x - 10, rect.y - 5))
+                    screen.blit(text, rect)
+                pygame.display.flip()
+                hover_description = None
 
 def use_mp_potion(player):
     if "MP Potion" in player.inventory.items:
@@ -274,9 +315,22 @@ def enemy_turn(player, enemy, screen):
     
     regenerate_enemy_mp(enemy)  # Regenerate MP after enemy's turn
     regenerate_enemy_sp(enemy)  # Regenerate SP after enemy's turn
-
-
+    show_regeneration(screen, enemy["name"], enemy["mp"], enemy["sp"], enemy=True)  # Show regeneration
     
+    player.apply_lingering_effects()  # Apply lingering effects at the start of the turn
+
+def show_regeneration(screen, name, mp, sp, enemy=False):
+    font = pygame.font.Font(None, 36)
+    mp_text = font.render(f"{name} regenerated MP to {mp}", True, (255, 255, 255))
+    sp_text = font.render(f"{name} regenerated SP to {sp}", True, (255, 255, 255))
+    if enemy:
+        screen.blit(mp_text, (screen.get_width() - 300, 50))
+        screen.blit(sp_text, (screen.get_width() - 300, 80))
+    else:
+        screen.blit(mp_text, (50, screen.get_height() - 100))
+        screen.blit(sp_text, (50, screen.get_height() - 70))
+    pygame.display.flip()
+    pygame.time.wait(1000)  # Show for 1 second
 
 def turnwise(player, enemy, screen):
     while player.hp > 0 and enemy['hp'] > 0:

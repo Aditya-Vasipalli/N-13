@@ -1,7 +1,7 @@
 from enemies import enemies
 import pygame
 import sys
-
+import logging
 class Player:
     def __init__(self, name, player_class):
         self.name = name
@@ -46,15 +46,22 @@ class Player:
         while self.xp >= self.xp_threshold:
             self.xp -= self.xp_threshold
             self.level += 1
-            self.hp += 20  # Increase HP on level up; adjust as needed
-            self.xp_threshold = int(self.xp_threshold * 1.5)  # Increase XP threshold for next level
-            print(f"{self.name} leveled up to level {self.level}!")
-            print(f"HP increased to {self.hp}.")
-            print(f"XP needed for next level: {self.xp_threshold}")
+            self.hp += 20  # Increase HP by 20 on level up; adjust as needed
+            self.max_hp = self.hp
             self.mp = self.calculate_mp()  # Recalculate MP on level up
             self.max_mp = self.mp
             self.sp = self.calculate_sp()  # Recalculate SP on level up
             self.max_sp = self.sp
+            self.xp_threshold = int(self.xp_threshold * 1.5)  # Increase XP threshold for next level
+            self.stat_points += 1  # Grant 1 stat point per level
+            if self.level % 5 == 0:
+                self.stat_points += 5  # Grant 5 additional stat points every 5 levels
+                self.learn_new_move()
+            logging.debug(f"{self.name} leveled up to level {self.level}!")
+            print(f"{self.name} leveled up to level {self.level}!")
+            print(f"HP increased to {self.hp}. MP increased to {self.mp}. SP increased to {self.sp}.")
+            print(f"XP needed for next level: {self.xp_threshold}")
+            print(f"You have {self.stat_points} stat points to assign.")
             self.display_level_up_screen()
 
     def display_level_up_screen(self):
@@ -78,8 +85,13 @@ class Player:
             screen.blit(text, (50, 100))
             text = font.render(f"XP needed for next level: {self.xp_threshold}", True, (255, 255, 255))
             screen.blit(text, (50, 150))
-            text = font.render("Press Enter to continue", True, (255, 255, 255))
+            text = font.render(f"You have {self.stat_points} stat points to assign.", True, (255, 255, 255))
             screen.blit(text, (50, 200))
+            if self.level % 5 == 0:
+                text = font.render("You have learned a new move!", True, (255, 255, 255))
+                screen.blit(text, (50, 250))
+            text = font.render("Press Enter to continue", True, (255, 255, 255))
+            screen.blit(text, (50, 300))
             pygame.display.flip()
             clock.tick(60)
 
