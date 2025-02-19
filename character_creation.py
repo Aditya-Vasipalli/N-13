@@ -414,7 +414,7 @@ def create_character(screen):
     return character
 
 def save_character_to_db(character):
-    # Placeholder function to save character to a database
+    #Future
     pass
 
 if __name__ == "__main__":
