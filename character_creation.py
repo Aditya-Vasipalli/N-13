@@ -18,7 +18,7 @@ class Character:
         self.inventory = Inventory()
         self.level = 1
         self.xp = 0
-        self.hp = 100  # Default HP; you can adjust based on class
+        self.hp = 100  # Default HP; 
         self.max_hp = self.hp
         self.mp = self.calculate_mp()  # Calculate MP based on Intelligence
         self.sp = self.calculate_sp()  # Calculate SP based on Agility
@@ -43,25 +43,25 @@ class Character:
 
     def calculate_mp(self):
         base_mp = 1
-        mp = base_mp + (self.stats['Intelligence'] * 5)  # Example multiplier
+        mp = base_mp + (self.stats['Intelligence'] * 5)  #  multiplier
         logging.debug(f"Calculated MP: {mp}")
         return mp
 
     def calculate_sp(self):
         base_sp = 1
-        sp = base_sp + (self.stats['Agility'] * 5)  # Example multiplier
+        sp = base_sp + (self.stats['Agility'] * 5)  #  multiplier
         logging.debug(f"Calculated SP: {sp}")
         return sp
 
     def regenerate_mp(self):
-        regen_amount = 3  # Example regeneration amount
+        regen_amount = 3  #  regeneration amount
         if self.mp < self.max_mp:
             self.mp = min(self.max_mp, self.mp + regen_amount)
             if self.mp < self.max_mp:
                 print(f"{self.name} regenerated {regen_amount} MP. Current MP: {self.mp}")
 
     def regenerate_sp(self):
-        regen_amount = 3  # Example regeneration amount
+        regen_amount = 3  #  regeneration amount
         if self.sp < self.max_sp:
             self.sp = min(self.max_sp, self.sp + regen_amount)
             if self.sp < self.max_sp:
@@ -79,7 +79,7 @@ class Character:
         while self.xp >= self.xp_threshold:
             self.xp -= self.xp_threshold
             self.level += 1
-            self.hp += 20  # Increase HP by 20 on level up; adjust as needed
+            self.hp += 20  # Increase HP by 20 on level up; 
             self.max_hp = self.hp
             self.mp = self.calculate_mp()  # Recalculate MP on level up
             self.max_mp = self.mp
@@ -106,7 +106,6 @@ class Character:
     def use_skill(self, skill):
         if skill in self.skills:
             print(f"You use the skill: {skill}")
-            # Implement skill usage logic here
         else:
             print(f"You do not know the skill: {skill}")
 
