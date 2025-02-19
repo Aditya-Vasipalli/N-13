@@ -27,6 +27,7 @@ def display_bars(character, enemy, screen):
     enemy_hp_text = font.render(f"Enemy HP: {enemy['hp']}", True, (255, 255, 255))
     enemy_mp_text = font.render(f"MP: {enemy['mp']}", True, (255, 255, 255))
     enemy_sp_text = font.render(f"SP: {enemy['sp']}", True, (255, 255, 255))
+    enemy_name_text = font.render(f"Enemy: {enemy['name']}", True, (255, 255, 255))
 
     screen.blit(player_hp_text, (50, 50))
     screen.blit(player_mp_text, (50, 100))
@@ -34,6 +35,7 @@ def display_bars(character, enemy, screen):
     screen.blit(enemy_hp_text, (450, 50))
     screen.blit(enemy_mp_text, (450, 100))
     screen.blit(enemy_sp_text, (450, 150))
+    screen.blit(enemy_name_text, (450, 200))
 
     # Load potion icons
     mp_potion_icon = pygame.image.load('assets/mp_potion.png')

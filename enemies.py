@@ -43,7 +43,6 @@ enemies = [
         "mp": 50,
         "sp": 60
     },
-    # Add more enemies as needed
     {
         "name": "Troll",
         "hp": 150,

@@ -1,6 +1,7 @@
 import pygame
 from character_creation import create_character, Character  # Import Character class
 import sys
+import os
 
 def start_quest(character, main_menu_callback, current_position):
     from quest import start_quest as quest_start
@@ -34,15 +35,14 @@ def main_menu(screen):
                             character = create_character(screen)
                             current_position = (0, 0)  # Reset position for new character
                         elif i == 1:
-                            # Logic to select an existing character
-                            character = create_default_character()  # Use default character for now
+                            character, current_position = select_existing_character(screen)
                         elif i == 2:
                             if character is None:
                                 character = create_default_character()  # Use default character if none selected
                             return character, current_position
                         elif i == 3:
                             if character is None:
-                                character = create_default_character()  # Use default character if none selected
+                                character, current_position = load_last_saved_character()
                             return character, current_position
                         elif i == 4:
                             pygame.quit()
@@ -70,6 +70,47 @@ def main_menu(screen):
             screen.blit(text, rect)
 
         pygame.display.flip()
+
+def select_existing_character(screen):
+    font = pygame.font.Font(None, 36)
+    save_files = [f for f in os.listdir() if f.endswith("_save.json")]
+    selected_file = None
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                for i, rect in enumerate(option_rects):
+                    if rect.collidepoint(mouse_pos):
+                        selected_file = save_files[i]
+                        break
+
+        screen.fill((0, 0, 0))
+        text = font.render("Select a character to load:", True, (255, 255, 255))
+        screen.blit(text, (50, 50))
+
+        option_rects = []
+        for i, save_file in enumerate(save_files):
+            text = font.render(save_file, True, (255, 255, 255))
+            rect = text.get_rect(topleft=(50, 100 + i * 50))
+            option_rects.append(rect)
+            screen.blit(text, rect)
+
+        pygame.display.flip()
+
+        if selected_file:
+            return Character.load_character(selected_file)
+
+def load_last_saved_character():
+    save_files = [f for f in os.listdir() if f.endswith("_save.json")]
+    if save_files:
+        latest_save = max(save_files, key=os.path.getctime)
+        return Character.load_character(latest_save)
+    else:
+        return create_default_character(), (0, 0)
 
 def create_default_character():
     stats = {"Strength": 10, "Agility": 5, "Intelligence": 3}

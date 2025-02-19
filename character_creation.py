@@ -4,6 +4,7 @@ from armor_weapon import armor_options, weapon_options, Armor, Weapon
 from inventory import Inventory
 import pygame
 import sys
+import json
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -229,6 +230,66 @@ class Character:
         pygame.time.wait(3000)  # Show for 3 seconds
         pygame.quit()
         sys.exit()
+
+    def save_character(self, current_position):
+        character_data = {
+            "name": self.name,
+            "char_class": self.char_class,
+            "stats": self.stats,
+            "skills": self.skills,
+            "level": self.level,
+            "xp": self.xp,
+            "hp": self.hp,
+            "max_hp": self.max_hp,
+            "mp": self.mp,
+            "max_mp": self.max_mp,
+            "sp": self.sp,
+            "max_sp": self.max_sp,
+            "xp_threshold": self.xp_threshold,
+            "stat_points": self.stat_points,
+            "crit_chance": self.crit_chance,
+            "critdmg": self.critdmg,
+            "equipped_weapon": self.equipped_weapon.name if self.equipped_weapon else None,
+            "equipped_armor": self.equipped_armor.name if self.equipped_armor else None,
+            "lingering_effects": self.lingering_effects,
+            "money": self.money,
+            "inventory": self.inventory.items,
+            "current_position": current_position
+        }
+        with open(f"{self.name}_save.json", "w") as file:
+            json.dump(character_data, file)
+        print(f"Character {self.name} saved successfully.")
+
+    @classmethod
+    def load_character(cls, filename):
+        with open(filename, "r") as file:
+            character_data = json.load(file)
+        character = cls(
+            character_data["name"],
+            character_data["char_class"],
+            character_data["stats"],
+            character_data["skills"]
+        )
+        character.level = character_data["level"]
+        character.xp = character_data["xp"]
+        character.hp = character_data["hp"]
+        character.max_hp = character_data["max_hp"]
+        character.mp = character_data["mp"]
+        character.max_mp = character_data["max_mp"]
+        character.sp = character_data["sp"]
+        character.max_sp = character_data["max_sp"]
+        character.xp_threshold = character_data["xp_threshold"]
+        character.stat_points = character_data["stat_points"]
+        character.crit_chance = character_data["crit_chance"]
+        character.critdmg = character_data["critdmg"]
+        character.equipped_weapon = character_data["equipped_weapon"]
+        character.equipped_armor = character_data["equipped_armor"]
+        character.lingering_effects = character_data["lingering_effects"]
+        character.money = character_data["money"]
+        character.inventory.items = character_data["inventory"]
+        current_position = character_data["current_position"]
+        print(f"Character {character.name} loaded successfully.")
+        return character, current_position
 
 def flash_lingering_effect_message(name, effect_name):
     pygame.init()
